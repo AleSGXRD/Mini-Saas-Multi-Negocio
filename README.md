@@ -1,9 +1,10 @@
-# Mini-Saas-Multi-Negocio
+# Mini-Saas-Multi-Tenant
 
-Sistema de gestión de órdenes con soporte multi-tenant.
-Tecnologías: NestJS, Angular, Prisma.
+Order management system with multi-tenant support.
 
-Objetivo: demostrar arquitectura limpia, separación por negocio y control de acceso.
+Technologies: NestJS, Angular, Prisma.
+
+Objective: To demonstrate clean architecture, business separation, and access control.
 
 <strong>
 Authentication
