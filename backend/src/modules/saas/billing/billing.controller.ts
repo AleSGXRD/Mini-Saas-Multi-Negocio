@@ -7,17 +7,17 @@ import {
   SubscriptionStatus,
 } from '../subscription/entities/subscription.entity';
 import { Repository } from 'typeorm';
-import { Business, BusinessStatus } from '../business/entities/business.entity';
 import { Public } from '@modules/auth-clerk/decorators/public.decorator';
 import { Payment } from './entities/payment.entity';
+import { Invoice } from './entities/invoice.entity';
 
 @Controller('billing')
 export class BillingController {
   constructor(
     @InjectRepository(Subscription)
     private readonly subscriptionRepo: Repository<Subscription>,
-    @InjectRepository(Business)
-    private readonly businessRepo: Repository<Business>,
+    @InjectRepository(Invoice)
+    private readonly invoiceRepository: Repository<Invoice>,
     @InjectRepository(Payment)
     private readonly paymentRepository: Repository<Payment>,
 
@@ -41,7 +41,6 @@ export class BillingController {
   @Public()
   @Post('webhook')
   async webhook(@Req() req: any) {
-    console.log('webhook posted');
     const stripe = this.stripeService.client;
 
     const sig = req.headers['stripe-signature'];
@@ -52,29 +51,70 @@ export class BillingController {
       process.env.STRIPE_WEBHOOK_SECRET!,
     );
 
-    if (event.type === 'checkout.session.completed') {
-      const session: any = event.data.object;
+    switch (event.type) {
+      // ✅ PAGO EXITOSO (primer mes y recurrentes)
+      case 'invoice.paid': {
+        const invoiceStripe: any = event.data.object;
 
-      const subscriptionId = session.metadata.subscriptionId;
+        const subscriptionId = invoiceStripe.metadata.subscriptionId;
 
-      const subscription = await this.subscriptionRepo.findOne({
-        where: { id: subscriptionId },
-        relations: ['business'],
-      });
+        const subscription = await this.subscriptionRepo.findOne({
+          where: { id: subscriptionId },
+        });
 
-      const payment = this.paymentRepository.create({
-        subscription,
-        amount: session.amount_total,
-        currency: session.currency,
-        providerPaymentId: session.payment_intent,
-      });
-      await this.paymentRepository.save(payment);
+        // ---------- CREATE INVOICE ----------
+        const invoice = await this.invoiceRepository.save({
+          subscription,
+          providerInvoiceId: invoiceStripe.id,
+          amountDue: invoiceStripe.amount_due,
+          amountPaid: invoiceStripe.amount_paid,
+          currency: invoiceStripe.currency,
+          status: 'paid',
+          hostedInvoiceUrl: invoiceStripe.hosted_invoice_url,
+          pdfUrl: invoiceStripe.invoice_pdf,
+        });
 
-      subscription.status = SubscriptionStatus.ACTIVE;
-      subscription.business.status = BusinessStatus.ACTIVE;
+        // ---------- CREATE PAYMENT ----------
+        await this.paymentRepository.save({
+          invoice,
+          providerPaymentId: invoiceStripe.payment_intent,
+          amount: invoiceStripe.amount_paid,
+          currency: invoiceStripe.currency,
+          status: 'paid',
+        });
 
-      await this.subscriptionRepo.save(subscription);
-      await this.businessRepo.save(subscription.business);
+        subscription.status = SubscriptionStatus.ACTIVE;
+        await this.subscriptionRepo.save(subscription);
+
+        break;
+      }
+
+      // ❌ PAGO FALLIDO
+      case 'invoice.payment_failed': {
+        const invoiceStripe: any = event.data.object;
+
+        const subscriptionId = invoiceStripe.metadata.subscriptionId;
+
+        const subscription = await this.subscriptionRepo.findOne({
+          where: { id: subscriptionId },
+        });
+
+        await this.invoiceRepository.save({
+          subscription,
+          providerInvoiceId: invoiceStripe.id,
+          amountDue: invoiceStripe.amount_due,
+          amountPaid: 0,
+          currency: invoiceStripe.currency,
+          status: 'failed',
+          hostedInvoiceUrl: invoiceStripe.hosted_invoice_url,
+          pdfUrl: invoiceStripe.invoice_pdf,
+        });
+
+        subscription.status = SubscriptionStatus.PAST_DUE;
+        await this.subscriptionRepo.save(subscription);
+
+        break;
+      }
     }
 
     return { received: true };

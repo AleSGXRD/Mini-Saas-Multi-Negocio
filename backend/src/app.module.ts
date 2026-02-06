@@ -15,6 +15,7 @@ import { Subscription } from '@modules/saas/subscription/entities/subscription.e
 import { Payment } from '@modules/saas/billing/entities/payment.entity';
 import { Plan } from '@modules/saas/subscription/entities/plan.entity';
 import { DatabaseModule } from '@database/database.module';
+import { Invoice } from '@modules/saas/billing/entities/invoice.entity';
 
 @Module({
   imports: [
@@ -24,7 +25,15 @@ import { DatabaseModule } from '@database/database.module';
     TypeOrmModule.forRoot({
       type: 'postgres',
       url: process.env.DATABASE_URL,
-      entities: [User, Business, Membership, Subscription, Payment, Plan],
+      entities: [
+        User,
+        Business,
+        Membership,
+        Subscription,
+        Invoice,
+        Payment,
+        Plan,
+      ],
       synchronize: true,
     }),
     DatabaseModule,

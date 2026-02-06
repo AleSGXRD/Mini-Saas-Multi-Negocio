@@ -1,13 +1,19 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { Subscription } from '../../subscription/entities/subscription.entity';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { Invoice } from './invoice.entity';
 
 @Entity()
 export class Payment {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => Subscription)
-  subscription: Subscription;
+  @ManyToOne(() => Invoice)
+  invoice: Invoice;
 
   @Column()
   amount: number;
@@ -17,4 +23,7 @@ export class Payment {
 
   @Column()
   providerPaymentId: string;
+
+  @CreateDateColumn()
+  createdAt: Date;
 }

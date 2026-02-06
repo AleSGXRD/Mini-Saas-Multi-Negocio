@@ -31,7 +31,7 @@ export class BillingService {
     const stripe = this.stripeService.client;
 
     const session = await stripe.checkout.sessions.create({
-      mode: 'payment', // luego puedes usar subscription
+      mode: 'subscription', // luego puedes usar subscription
       payment_method_types: ['card'],
       line_items: [
         {

@@ -7,11 +7,12 @@ import {
 } from 'typeorm';
 import { Business } from '../../business/entities/business.entity';
 import { Plan } from './plan.entity';
-import { Payment } from '../../billing/entities/payment.entity';
+import { Invoice } from '@modules/saas/billing/entities/invoice.entity';
 
 export enum SubscriptionStatus {
   INCOMPLETE = 'incomplete',
   ACTIVE = 'active',
+  PAST_DUE = 'past_due',
   CANCELED = 'canceled',
 }
 
@@ -32,9 +33,9 @@ export class Subscription {
   })
   status: SubscriptionStatus;
 
-  @Column({ nullable: true })
-  providerSubscriptionId: string; // stripe/paypal id
+  @Column({ unique: true })
+  providerSubscriptionId: string;
 
-  @OneToMany(() => Payment, (p) => p.subscription)
-  payments: Payment[];
+  @OneToMany(() => Invoice, (i) => i.subscription)
+  invoices: Invoice[];
 }
