@@ -62,27 +62,38 @@ export class BillingController {
           where: { id: subscriptionId },
         });
 
-        // ---------- CREATE INVOICE ----------
-        const invoice = await this.invoiceRepository.save({
-          subscription,
-          providerInvoiceId: invoiceStripe.id,
-          amountDue: invoiceStripe.amount_due,
-          amountPaid: invoiceStripe.amount_paid,
-          currency: invoiceStripe.currency,
-          status: 'paid',
-          hostedInvoiceUrl: invoiceStripe.hosted_invoice_url,
-          pdfUrl: invoiceStripe.invoice_pdf,
+        let invoice = await this.invoiceRepository.findOne({
+          where: { providerInvoiceId: invoiceStripe.id },
         });
+        if (!invoice) {
+          invoice = await this.invoiceRepository.save({
+            subscription,
+            providerInvoiceId: invoiceStripe.id,
+            amountDue: invoiceStripe.amount_due,
+            amountPaid: invoiceStripe.amount_paid,
+            currency: invoiceStripe.currency,
+            status: 'paid',
+            hostedInvoiceUrl: invoiceStripe.hosted_invoice_url,
+            pdfUrl: invoiceStripe.invoice_pdf,
+          });
+        }
 
-        // ---------- CREATE PAYMENT ----------
-        await this.paymentRepository.save({
-          invoice,
-          providerPaymentId:
-            invoiceStripe.payment_intent ?? `invoice_${invoiceStripe.id}`,
-          amount: invoiceStripe.amount_paid,
-          currency: invoiceStripe.currency,
-          status: 'paid',
+        let payment = await this.paymentRepository.findOne({
+          where: {
+            providerPaymentId:
+              invoiceStripe.payment_intent || `invoice_${invoiceStripe.id}`,
+          },
         });
+        if (!payment) {
+          payment = await this.paymentRepository.save({
+            invoice,
+            providerPaymentId:
+              invoiceStripe.payment_intent ?? `invoice_${invoiceStripe.id}`,
+            amount: invoiceStripe.amount_paid,
+            currency: invoiceStripe.currency,
+            status: 'paid',
+          });
+        }
 
         subscription.status = SubscriptionStatus.ACTIVE;
         await this.subscriptionRepo.save(subscription);
