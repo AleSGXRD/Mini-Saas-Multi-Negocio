@@ -127,8 +127,42 @@ export class BillingController {
 
         break;
       }
+      case 'customer.subscription.updated': {
+        const subStripe: any = event.data.object;
+
+        const subscription = await this.subscriptionRepo.findOne({
+          where: { providerSubscriptionId: subStripe.id },
+        });
+
+        subscription.status = this.mapStripeStatus(subStripe.status);
+
+        subscription.cancelAtPeriodEnd = subStripe.cancel_at_period_end;
+
+        await this.subscriptionRepo.save(subscription);
+
+        break;
+      }
     }
 
     return { received: true };
   }
+  mapStripeStatus(status: string) {
+    switch (status) {
+      case 'active':
+        return SubscriptionStatus.ACTIVE;
+
+      case 'past_due':
+        return SubscriptionStatus.PAST_DUE;
+
+      case 'unpaid':
+        return SubscriptionStatus.UNPAID;
+
+      case 'canceled':
+        return SubscriptionStatus.CANCELED;
+
+      default:
+        return SubscriptionStatus.INACTIVE;
+    }
+  }
+
 }
