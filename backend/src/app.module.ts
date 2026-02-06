@@ -36,14 +36,7 @@ import { DatabaseModule } from '@database/database.module';
     BillingModule,
   ],
   controllers: [AppController],
-  providers: [
-    AppService,
-    ClerkClientProvider,
-    {
-      provide: APP_GUARD,
-      useClass: ClerkAuthGuard,
-    },
-  ],
+  providers: [AppService, ClerkClientProvider],
   exports: [TypeOrmModule],
 })
 export class AppModule {}
