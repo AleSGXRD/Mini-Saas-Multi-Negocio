@@ -8,6 +8,7 @@ import {
 } from '../subscription/entities/subscription.entity';
 import { Repository } from 'typeorm';
 import { Business, BusinessStatus } from '../business/entities/business.entity';
+import { Public } from '@modules/auth-clerk/decorators/public.decorator';
 
 @Controller('billing')
 export class BillingController {
@@ -33,6 +34,8 @@ export class BillingController {
       ),
     };
   }
+
+  @Public()
   @Post('webhook')
   async webhook(@Req() req: any) {
     console.log('webhook posted');
