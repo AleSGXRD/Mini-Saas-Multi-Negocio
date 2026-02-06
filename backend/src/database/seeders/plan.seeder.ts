@@ -21,7 +21,12 @@ export class PlanSeeder implements OnModuleInit {
   async seed() {
     const plans = [
       { code: PlanCode.FREE, price: 0, interval: PlanInterval.MONTH },
-      { code: PlanCode.PRO, price: 2900, interval: PlanInterval.MONTH },
+      {
+        code: PlanCode.PRO,
+        price: 2900,
+        stripePriceId: 'price_1SxrJhDRgWpQDPnXUZK51QPO',
+        interval: PlanInterval.MONTH,
+      },
       { code: PlanCode.ENTERPRISE, price: 9900, interval: PlanInterval.MONTH },
     ];
 
@@ -32,6 +37,15 @@ export class PlanSeeder implements OnModuleInit {
 
       if (!exists) {
         await this.repo.save(p);
+      } else {
+        if (exists.price !== p.price || exists.interval !== p.interval) {
+          exists.price = p.price;
+          exists.interval = p.interval;
+          if (p.stripePriceId) {
+            exists.stripePriceId = p.stripePriceId;
+          }
+          await this.repo.save(exists);
+        }
       }
     }
 

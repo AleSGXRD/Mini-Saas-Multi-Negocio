@@ -22,6 +22,9 @@ export class Plan {
   @Column()
   price: number;
 
+  @Column()
+  stripePriceId: string;
+
   @Column({ type: 'enum', enum: PlanInterval, default: PlanInterval.MONTH })
   interval: PlanInterval;
 }

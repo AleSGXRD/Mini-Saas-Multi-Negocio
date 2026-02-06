@@ -26,7 +26,7 @@ export class BillingService {
   async createCheckout(
     businessId: string,
     subscriptionId: string,
-    price: number,
+    stripePriceId: string,
   ) {
     const stripe = this.stripeService.client;
 
@@ -35,13 +35,7 @@ export class BillingService {
       payment_method_types: ['card', 'pix', 'paypal'],
       line_items: [
         {
-          price_data: {
-            currency: 'usd',
-            product_data: {
-              name: 'Business Plan',
-            },
-            unit_amount: price,
-          },
+          price: stripePriceId,
           quantity: 1,
         },
       ],

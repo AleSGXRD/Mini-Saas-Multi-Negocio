@@ -33,7 +33,7 @@ export class BillingController {
       url: await this.billingService.createCheckout(
         subscription.business.id,
         subscription.id,
-        subscription.plan.price,
+        subscription.plan.stripePriceId,
       ),
     };
   }
