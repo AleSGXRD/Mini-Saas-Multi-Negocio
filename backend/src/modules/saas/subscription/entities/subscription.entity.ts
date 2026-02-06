@@ -33,7 +33,7 @@ export class Subscription {
   })
   status: SubscriptionStatus;
 
-  @Column({ unique: true })
+  @Column({ nullable: true })
   providerSubscriptionId: string;
 
   @OneToMany(() => Invoice, (i) => i.subscription)

@@ -21,7 +21,7 @@ export class Payment {
   @Column()
   currency: string;
 
-  @Column()
+  @Column({ unique: true })
   providerPaymentId: string;
 
   @CreateDateColumn()
