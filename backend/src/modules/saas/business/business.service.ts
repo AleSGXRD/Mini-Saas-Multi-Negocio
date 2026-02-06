@@ -4,7 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateBusinessDto } from './dto/create-business.dto';
 import { Membership } from './entities/membership.entity';
-import { Plan, PlanCode } from './entities/plan.entity';
+import { Plan, PlanCode } from '../subscription/entities/plan.entity';
 import { SubscriptionService } from '../subscription/subscription.service';
 
 @Injectable()

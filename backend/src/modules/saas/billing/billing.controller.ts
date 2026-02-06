@@ -9,6 +9,7 @@ import {
 import { Repository } from 'typeorm';
 import { Business, BusinessStatus } from '../business/entities/business.entity';
 import { Public } from '@modules/auth-clerk/decorators/public.decorator';
+import { Payment } from './entities/payment.entity';
 
 @Controller('billing')
 export class BillingController {
@@ -17,6 +18,8 @@ export class BillingController {
     private readonly subscriptionRepo: Repository<Subscription>,
     @InjectRepository(Business)
     private readonly businessRepo: Repository<Business>,
+    @InjectRepository(Payment)
+    private readonly paymentRepository: Repository<Payment>,
 
     private readonly billingService: BillingService,
     private readonly stripeService: StripeService,
@@ -58,6 +61,14 @@ export class BillingController {
         where: { id: subscriptionId },
         relations: ['business'],
       });
+
+      const payment = this.paymentRepository.create({
+        subscription,
+        amount: session.amount_total,
+        currency: session.currency,
+        providerPaymentId: session.payment_intent,
+      });
+      await this.paymentRepository.save(payment);
 
       subscription.status = SubscriptionStatus.ACTIVE;
       subscription.business.status = BusinessStatus.ACTIVE;

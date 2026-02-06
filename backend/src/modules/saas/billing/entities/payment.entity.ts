@@ -17,7 +17,4 @@ export class Payment {
 
   @Column()
   providerPaymentId: string;
-
-  @Column()
-  status: 'pending' | 'paid' | 'failed';
 }

@@ -7,7 +7,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Membership } from './membership.entity';
-import { Plan } from './plan.entity';
+import { Plan } from '../../subscription/entities/plan.entity';
 
 export enum BusinessStatus {
   ACTIVE = 'active',

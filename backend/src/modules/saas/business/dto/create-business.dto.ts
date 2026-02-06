@@ -1,5 +1,5 @@
 import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
-import { PlanCode } from '../entities/plan.entity';
+import { PlanCode } from '../../subscription/entities/plan.entity';
 
 export class CreateBusinessDto {
   @IsString()

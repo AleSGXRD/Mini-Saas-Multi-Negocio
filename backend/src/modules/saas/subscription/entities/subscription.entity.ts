@@ -6,8 +6,8 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Business } from '../../business/entities/business.entity';
-import { Plan } from '../../business/entities/plan.entity';
-import { Payment } from '../../business/entities/payment.entity';
+import { Plan } from './plan.entity';
+import { Payment } from '../../billing/entities/payment.entity';
 
 export enum SubscriptionStatus {
   INCOMPLETE = 'incomplete',

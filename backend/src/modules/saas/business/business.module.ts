@@ -5,7 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Business } from './entities/business.entity';
 import { Membership } from './entities/membership.entity';
 import { AuthModule } from '@modules/auth-clerk/auth/auth.module';
-import { Plan } from './entities/plan.entity';
+import { Plan } from '../subscription/entities/plan.entity';
 import { SubscriptionModule } from '../subscription/subscription.module';
 
 @Module({

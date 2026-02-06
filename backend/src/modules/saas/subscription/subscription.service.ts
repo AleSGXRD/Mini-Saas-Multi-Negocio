@@ -6,7 +6,7 @@ import {
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Business } from '../business/entities/business.entity';
-import { Plan } from '../business/entities/plan.entity';
+import { Plan } from './entities/plan.entity';
 import { BillingService } from '../billing/billing.service';
 
 @Injectable()

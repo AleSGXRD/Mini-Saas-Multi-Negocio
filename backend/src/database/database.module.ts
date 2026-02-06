@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Plan } from '@modules/saas/business/entities/plan.entity';
+import { Plan } from '@modules/saas/subscription/entities/plan.entity';
 import { PlanSeeder } from './seeders/plan.seeder';
 
 @Module({

@@ -5,7 +5,7 @@ import {
   Plan,
   PlanCode,
   PlanInterval,
-} from '@modules/saas/business/entities/plan.entity';
+} from '@modules/saas/subscription/entities/plan.entity';
 
 @Injectable()
 export class PlanSeeder implements OnModuleInit {
