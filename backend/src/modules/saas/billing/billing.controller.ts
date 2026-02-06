@@ -35,6 +35,7 @@ export class BillingController {
   }
   @Post('webhook')
   async webhook(@Req() req: any) {
+    console.log('webhook posted');
     const stripe = this.stripeService.client;
 
     const sig = req.headers['stripe-signature'];
