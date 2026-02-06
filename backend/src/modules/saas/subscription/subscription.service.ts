@@ -31,7 +31,7 @@ export class SubscriptionService {
     const checkoutUrl = await this.billingService.createCheckout(
       business.id,
       subscription.id,
-      plan.price,
+      plan.stripePriceId,
     );
 
     return checkoutUrl;
