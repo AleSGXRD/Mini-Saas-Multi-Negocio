@@ -77,7 +77,8 @@ export class BillingController {
         // ---------- CREATE PAYMENT ----------
         await this.paymentRepository.save({
           invoice,
-          providerPaymentId: invoiceStripe.payment_intent,
+          providerPaymentId:
+            invoiceStripe.payment_intent ?? `invoice_${invoiceStripe.id}`,
           amount: invoiceStripe.amount_paid,
           currency: invoiceStripe.currency,
           status: 'paid',
