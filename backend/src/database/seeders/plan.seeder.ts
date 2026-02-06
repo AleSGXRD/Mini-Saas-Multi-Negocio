@@ -38,7 +38,11 @@ export class PlanSeeder implements OnModuleInit {
       if (!exists) {
         await this.repo.save(p);
       } else {
-        if (exists.price !== p.price || exists.interval !== p.interval) {
+        if (
+          exists.price !== p.price ||
+          exists.interval !== p.interval ||
+          exists.stripePriceId !== p.stripePriceId
+        ) {
           exists.price = p.price;
           exists.interval = p.interval;
           if (p.stripePriceId) {

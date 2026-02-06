@@ -32,7 +32,7 @@ export class BillingService {
 
     const session = await stripe.checkout.sessions.create({
       mode: 'subscription', // luego puedes usar subscription
-      payment_method_types: ['card', 'pix', 'paypal'],
+      payment_method_types: ['card'],
       line_items: [
         {
           price: stripePriceId,
