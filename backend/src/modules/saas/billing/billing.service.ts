@@ -40,7 +40,7 @@ export class BillingService {
             product_data: {
               name: 'Business Plan',
             },
-            unit_amount: price * 100,
+            unit_amount: price,
           },
           quantity: 1,
         },
