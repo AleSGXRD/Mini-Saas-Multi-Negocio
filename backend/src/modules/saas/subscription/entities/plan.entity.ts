@@ -22,7 +22,7 @@ export class Plan {
   @Column()
   price: number;
 
-  @Column()
+  @Column({ nullable: true })
   stripePriceId: string;
 
   @Column({ type: 'enum', enum: PlanInterval, default: PlanInterval.MONTH })
