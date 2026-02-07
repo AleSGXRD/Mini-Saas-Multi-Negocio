@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import { CreateBusinessDto } from './dto/create-business.dto';
 import { Membership } from './entities/membership.entity';
 import { Plan, PlanCode } from '../subscription/entities/plan.entity';
-import { BillingService } from '../billing/billing.service';
+import { SubscriptionService } from '../subscription/subscription.service';
 
 @Injectable()
 export class BusinessService {
@@ -17,7 +17,7 @@ export class BusinessService {
     @InjectRepository(Plan)
     private planRepository: Repository<Plan>,
 
-    private billingService: BillingService,
+    private subscriptionService: SubscriptionService,
   ) {}
 
   getBusinessesByUser(userId: string) {
@@ -56,9 +56,7 @@ export class BusinessService {
     let checkoutUrl: string | null = null;
 
     if (plan.code !== PlanCode.FREE) {
-      await this.billingService.createCheckout(business, plan);
-
-      checkoutUrl = await this.billingService.createCheckout(
+      checkoutUrl = await this.subscriptionService.createSubscription(
         businessSaved,
         plan,
       );

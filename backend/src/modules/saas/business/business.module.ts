@@ -6,13 +6,13 @@ import { Business } from './entities/business.entity';
 import { Membership } from './entities/membership.entity';
 import { AuthModule } from '@modules/auth-clerk/auth/auth.module';
 import { Plan } from '../subscription/entities/plan.entity';
-import { BillingModule } from '../billing/billing.module';
+import { SubscriptionModule } from '../subscription/subscription.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Business, Membership, Plan]),
     AuthModule,
-    BillingModule,
+    SubscriptionModule,
   ],
   controllers: [BusinessController],
   providers: [BusinessService],

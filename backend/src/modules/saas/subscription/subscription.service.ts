@@ -7,6 +7,8 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Business, BusinessStatus } from '../business/entities/business.entity';
 import mapStripeStatus from '../billing/logic/stripe-status';
+import { BillingService } from '../billing/billing.service';
+import { Plan } from './entities/plan.entity';
 
 @Injectable()
 export class SubscriptionService {
@@ -15,7 +17,25 @@ export class SubscriptionService {
     private subscriptionRepository: Repository<Subscription>,
     @InjectRepository(Business)
     private businessRepository: Repository<Business>,
+
+    private billingService: BillingService,
   ) {}
+
+  async createSubscription(business: Business, plan: Plan) {
+    const subscription = await this.subscriptionRepository.save({
+      business,
+      plan,
+      status: SubscriptionStatus.INCOMPLETE,
+    });
+
+    const checkoutUrl = await this.billingService.createCheckout(
+      business.id,
+      subscription.id,
+      plan.stripePriceId,
+    );
+
+    return checkoutUrl;
+  }
 
   async updateSubscription(
     id: string,

@@ -1,5 +1,4 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { StripeService } from './stripe.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   Subscription,
@@ -8,8 +7,7 @@ import {
 import { Repository } from 'typeorm';
 import { Payment } from './entities/payment.entity';
 import { Invoice } from './entities/invoice.entity';
-import { Business } from '../business/entities/business.entity';
-import { Plan } from '../subscription/entities/plan.entity';
+import { StripeService } from '../stripe/stripe.service';
 
 @Injectable()
 export class BillingService {
@@ -34,16 +32,11 @@ export class BillingService {
     return subscription;
   }
 
-  async createCheckout(business: Business, plan: Plan) {
-    const subscription = await this.subscriptionRepository.save({
-      business,
-      plan,
-      status: SubscriptionStatus.INCOMPLETE,
-    });
-    const { stripePriceId } = plan;
-    const { id: subscriptionId } = subscription;
-    const { id: businessId } = business;
-
+  async createCheckout(
+    businessId: string,
+    subscriptionId: string,
+    stripePriceId: string,
+  ) {
     const stripe = this.stripeService.client;
 
     const session = await stripe.checkout.sessions.create({

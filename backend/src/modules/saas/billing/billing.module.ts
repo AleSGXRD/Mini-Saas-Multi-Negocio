@@ -1,21 +1,19 @@
 import { Module } from '@nestjs/common';
 import { BillingService } from './billing.service';
 import { BillingController } from './billing.controller';
-import { StripeService } from './stripe.service';
 import { Subscription } from '../subscription/entities/subscription.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Business } from '../business/entities/business.entity';
 import { Payment } from './entities/payment.entity';
 import { Invoice } from './entities/invoice.entity';
-import { SubscriptionModule } from '../subscription/subscription.module';
+import { StripeService } from '../stripe/stripe.service';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Subscription, Business, Invoice, Payment]),
-    SubscriptionModule,
   ],
   controllers: [BillingController],
   providers: [BillingService, StripeService],
-  exports: [BillingService],
+  exports: [BillingService, StripeService],
 })
 export class BillingModule {}
