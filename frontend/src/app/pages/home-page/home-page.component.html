@@ -1,3 +1,10 @@
 <clerk-user-profile/>
 <clerk-user-button/>
 {{info}}
+
+<div class="grid grid-cols-4 gap-4">
+  @for(business of businesses; track $index){
+    <app-business-element [business]="business"></app-business-element>
+  }
+
+</div>

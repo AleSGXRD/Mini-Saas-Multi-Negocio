@@ -1,0 +1,29 @@
+@if (business) {
+  <p-card class="business-card">
+
+    <!-- Header -->
+    <div class="header">
+      <div class="title">
+        {{ business.name }}
+      </div>
+
+      <p-tag
+        [value]="statusLabel"
+        [severity]="statusSeverity"
+        rounded>
+      </p-tag>
+    </div>
+
+    <!-- Plan -->
+    <div class="plan">
+      {{ getPlanLabel(business.plan?.code ?? 'free') }}
+    </div>
+
+    <!-- Info -->
+    <div class="meta">
+      <span>Estado: {{ business.status }}</span>
+      <span>Creado: {{ business.createdAt | date:'mediumDate' }}</span>
+    </div>
+
+  </p-card>
+}

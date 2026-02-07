@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Plan } from '../model/enum/plan.enum';
 import { environment } from '../../environment/environment';
+import { Business } from '../model/business.model';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +12,7 @@ export class BusinessService {
   constructor(private http: HttpClient) { }
 
   getBusinesses(){
-    return this.http.get<string>(`${environment.SERVER_URL}/business`);
+    return this.http.get<Business[]>(`${environment.SERVER_URL}/business`);
   }
 
   createBusiness(data: {
