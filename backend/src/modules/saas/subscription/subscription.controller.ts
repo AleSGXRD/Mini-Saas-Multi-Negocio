@@ -25,7 +25,6 @@ export class SubscriptionController {
 
     const objectStripe: any = event.data.object;
 
-    console.log('Canceling subscription with id:', objectStripe.id);
     switch (event.type) {
       case 'customer.subscription.updated': {
         const { id, status, cancel_at_period_end } = objectStripe;
