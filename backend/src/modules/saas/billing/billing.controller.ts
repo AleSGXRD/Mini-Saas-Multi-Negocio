@@ -38,9 +38,10 @@ export class BillingController {
 
     const objectStripe: any = event.data.object;
     const providerSubscriptionId =
-      objectStripe.lines.data[0].parent.subscription;
+      objectStripe.lines.data[0].parent.subscription_item_details.subscription;
 
     const subscriptionId = objectStripe.metadata.subscriptionId;
+    console.log(providerSubscriptionId);
 
     switch (event.type) {
       case 'invoice.paid': {
