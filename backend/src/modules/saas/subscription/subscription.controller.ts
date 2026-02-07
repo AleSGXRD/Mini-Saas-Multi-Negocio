@@ -20,11 +20,12 @@ export class SubscriptionController {
     const event = stripe.webhooks.constructEvent(
       req.rawBody,
       sig,
-      process.env.STRIPE_WEBHOOK_SECRET!,
+      process.env.STRIPE_SUBSCRIPTION_WEBHOOK_SECRET!,
     );
 
     const objectStripe: any = event.data.object;
 
+    console.log('Canceling subscription with id:', objectStripe.id);
     switch (event.type) {
       case 'customer.subscription.updated': {
         const { id, status, cancel_at_period_end } = objectStripe;

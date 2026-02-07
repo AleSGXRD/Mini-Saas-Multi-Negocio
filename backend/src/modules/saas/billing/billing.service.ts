@@ -60,7 +60,11 @@ export class BillingService {
     return session.url;
   }
 
-  async paymentSuccess(subscriptionId: string, invoiceStripe: any) {
+  async paymentSuccess(
+    subscriptionId: string,
+    invoiceStripe: any,
+    providerSubscriptionId: string,
+  ) {
     const subscription = await this.subscriptionRepository.findOne({
       where: { id: subscriptionId },
     });
@@ -99,10 +103,15 @@ export class BillingService {
     }
 
     subscription.status = SubscriptionStatus.ACTIVE;
+    subscription.providerSubscriptionId = providerSubscriptionId;
     await this.subscriptionRepository.save(subscription);
   }
 
-  async paymentFailed(subscriptionId: string, invoiceStripe: any) {
+  async paymentFailed(
+    subscriptionId: string,
+    invoiceStripe: any,
+    providerSubscriptionId: string,
+  ) {
     const subscription = await this.subscriptionRepository.findOne({
       where: { id: subscriptionId },
     });
@@ -119,6 +128,7 @@ export class BillingService {
     });
 
     subscription.status = SubscriptionStatus.PAST_DUE;
+    subscription.providerSubscriptionId = providerSubscriptionId;
     await this.subscriptionRepository.save(subscription);
   }
 }

@@ -37,17 +37,28 @@ export class BillingController {
     );
 
     const objectStripe: any = event.data.object;
+    const providerSubscriptionId =
+      objectStripe.lines.data[0].parent.subscription;
 
     const subscriptionId = objectStripe.metadata.subscriptionId;
+
     switch (event.type) {
       case 'invoice.paid': {
-        await this.billingService.paymentSuccess(subscriptionId, objectStripe);
+        await this.billingService.paymentSuccess(
+          subscriptionId,
+          objectStripe,
+          providerSubscriptionId,
+        );
 
         break;
       }
 
       case 'invoice.payment_failed': {
-        await this.billingService.paymentFailed(subscriptionId, objectStripe);
+        await this.billingService.paymentFailed(
+          subscriptionId,
+          objectStripe,
+          providerSubscriptionId,
+        );
 
         break;
       }
