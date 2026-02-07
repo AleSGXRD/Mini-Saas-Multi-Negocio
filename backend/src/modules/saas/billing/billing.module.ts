@@ -7,10 +7,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Business } from '../business/entities/business.entity';
 import { Payment } from './entities/payment.entity';
 import { Invoice } from './entities/invoice.entity';
+import { SubscriptionModule } from '../subscription/subscription.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Subscription, Business, Invoice, Payment]),
+    SubscriptionModule,
   ],
   controllers: [BillingController],
   providers: [BillingService, StripeService],

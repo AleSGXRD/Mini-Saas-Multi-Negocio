@@ -1,27 +1,14 @@
 import { Controller, Post, Param, Req } from '@nestjs/common';
 import { BillingService } from './billing.service';
 import { StripeService } from './stripe.service';
-import { InjectRepository } from '@nestjs/typeorm';
-import {
-  Subscription,
-  SubscriptionStatus,
-} from '../subscription/entities/subscription.entity';
-import { Repository } from 'typeorm';
 import { Public } from '@modules/auth-clerk/decorators/public.decorator';
-import { Payment } from './entities/payment.entity';
-import { Invoice } from './entities/invoice.entity';
+import { SubscriptionService } from '../subscription/subscription.service';
 
 @Controller('billing')
 export class BillingController {
   constructor(
-    @InjectRepository(Subscription)
-    private readonly subscriptionRepo: Repository<Subscription>,
-    @InjectRepository(Invoice)
-    private readonly invoiceRepository: Repository<Invoice>,
-    @InjectRepository(Payment)
-    private readonly paymentRepository: Repository<Payment>,
-
     private readonly billingService: BillingService,
+    private readonly subscriptionService: SubscriptionService,
     private readonly stripeService: StripeService,
   ) {}
 
@@ -31,9 +18,8 @@ export class BillingController {
       await this.billingService.findSubscriptionById(subscriptionId);
     return {
       url: await this.billingService.createCheckout(
-        subscription.business.id,
-        subscription.id,
-        subscription.plan.stripePriceId,
+        subscription.business,
+        subscription.plan,
       ),
     };
   }
@@ -51,94 +37,38 @@ export class BillingController {
       process.env.STRIPE_WEBHOOK_SECRET!,
     );
 
+    const objectStripe: any = event.data.object;
+
+    const subscriptionId = objectStripe.metadata.subscriptionId;
     switch (event.type) {
-      // ✅ PAGO EXITOSO (primer mes y recurrentes)
       case 'invoice.paid': {
-        const invoiceStripe: any = event.data.object;
-
-        const subscriptionId = invoiceStripe.metadata.subscriptionId;
-
-        const subscription = await this.subscriptionRepo.findOne({
-          where: { id: subscriptionId },
-        });
-
-        let invoice = await this.invoiceRepository.findOne({
-          where: { providerInvoiceId: invoiceStripe.id },
-        });
-        if (!invoice) {
-          invoice = await this.invoiceRepository.save({
-            subscription,
-            providerInvoiceId: invoiceStripe.id,
-            amountDue: invoiceStripe.amount_due,
-            amountPaid: invoiceStripe.amount_paid,
-            currency: invoiceStripe.currency,
-            status: 'paid',
-            hostedInvoiceUrl: invoiceStripe.hosted_invoice_url,
-            pdfUrl: invoiceStripe.invoice_pdf,
-          });
-        }
-
-        let payment = await this.paymentRepository.findOne({
-          where: {
-            providerPaymentId:
-              invoiceStripe.payment_intent || `invoice_${invoiceStripe.id}`,
-          },
-        });
-        if (!payment) {
-          payment = await this.paymentRepository.save({
-            invoice,
-            providerPaymentId:
-              invoiceStripe.payment_intent ?? `invoice_${invoiceStripe.id}`,
-            amount: invoiceStripe.amount_paid,
-            currency: invoiceStripe.currency,
-            status: 'paid',
-          });
-        }
-
-        subscription.status = SubscriptionStatus.ACTIVE;
-        await this.subscriptionRepo.save(subscription);
+        await this.billingService.paymentSuccess(subscriptionId, objectStripe);
 
         break;
       }
 
-      // ❌ PAGO FALLIDO
       case 'invoice.payment_failed': {
-        const invoiceStripe: any = event.data.object;
-
-        const subscriptionId = invoiceStripe.metadata.subscriptionId;
-
-        const subscription = await this.subscriptionRepo.findOne({
-          where: { id: subscriptionId },
-        });
-
-        await this.invoiceRepository.save({
-          subscription,
-          providerInvoiceId: invoiceStripe.id,
-          amountDue: invoiceStripe.amount_due,
-          amountPaid: 0,
-          currency: invoiceStripe.currency,
-          status: 'failed',
-          hostedInvoiceUrl: invoiceStripe.hosted_invoice_url,
-          pdfUrl: invoiceStripe.invoice_pdf,
-        });
-
-        subscription.status = SubscriptionStatus.PAST_DUE;
-        await this.subscriptionRepo.save(subscription);
+        await this.billingService.paymentFailed(subscriptionId, objectStripe);
 
         break;
       }
+
       case 'customer.subscription.updated': {
-        const subStripe: any = event.data.object;
+        const { id, status, cancel_at_period_end } = objectStripe;
 
-        const subscription = await this.subscriptionRepo.findOne({
-          where: { providerSubscriptionId: subStripe.id },
-        });
+        await this.subscriptionService.updateSubscription(
+          id,
+          status,
+          cancel_at_period_end,
+        );
 
-        subscription.status = this.mapStripeStatus(subStripe.status);
+        break;
+      }
 
-        subscription.cancelAtPeriodEnd = subStripe.cancel_at_period_end;
+      case 'customer.subscription.deleted': {
+        const { id } = objectStripe;
 
-        await this.subscriptionRepo.save(subscription);
+        await this.subscriptionService.cancelSubscription(id);
 
         break;
       }
@@ -146,23 +76,4 @@ export class BillingController {
 
     return { received: true };
   }
-  mapStripeStatus(status: string) {
-    switch (status) {
-      case 'active':
-        return SubscriptionStatus.ACTIVE;
-
-      case 'past_due':
-        return SubscriptionStatus.PAST_DUE;
-
-      case 'unpaid':
-        return SubscriptionStatus.UNPAID;
-
-      case 'canceled':
-        return SubscriptionStatus.CANCELED;
-
-      default:
-        return SubscriptionStatus.INACTIVE;
-    }
-  }
-
 }

@@ -1,39 +1,57 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import {
   Subscription,
   SubscriptionStatus,
 } from './entities/subscription.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Business } from '../business/entities/business.entity';
-import { Plan } from './entities/plan.entity';
-import { BillingService } from '../billing/billing.service';
+import { Business, BusinessStatus } from '../business/entities/business.entity';
+import mapStripeStatus from '../billing/logic/stripe-status';
 
 @Injectable()
 export class SubscriptionService {
-  /**
-   *
-   */
   constructor(
     @InjectRepository(Subscription)
     private subscriptionRepository: Repository<Subscription>,
-
-    private billingService: BillingService,
+    @InjectRepository(Business)
+    private businessRepository: Repository<Business>,
   ) {}
 
-  async createCheckout(business: Business, plan: Plan) {
-    const subscription = await this.subscriptionRepository.save({
-      business,
-      plan,
-      status: SubscriptionStatus.INCOMPLETE,
+  async updateSubscription(
+    id: string,
+    status: string,
+    cancelAtPeriodEnd: boolean,
+  ) {
+    const subscription = await this.subscriptionRepository.findOne({
+      where: { providerSubscriptionId: id },
     });
 
-    const checkoutUrl = await this.billingService.createCheckout(
-      business.id,
-      subscription.id,
-      plan.stripePriceId,
-    );
+    if (!subscription) {
+      throw new NotFoundException('Subscription not found');
+    }
 
-    return checkoutUrl;
+    subscription.status = mapStripeStatus(status);
+
+    subscription.cancelAtPeriodEnd = cancelAtPeriodEnd;
+
+    await this.subscriptionRepository.save(subscription);
+  }
+
+  async cancelSubscription(id: string) {
+    const subscription = await this.subscriptionRepository.findOne({
+      where: { providerSubscriptionId: id },
+      relations: ['business'],
+    });
+
+    if (!subscription) {
+      throw new NotFoundException('Subscription not found');
+    }
+
+    subscription.status = SubscriptionStatus.CANCELED;
+
+    subscription.business.status = BusinessStatus.SUSPENDED;
+
+    await this.subscriptionRepository.save(subscription);
+    await this.businessRepository.save(subscription.business);
   }
 }

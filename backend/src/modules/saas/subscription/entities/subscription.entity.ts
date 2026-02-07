@@ -38,6 +38,9 @@ export class Subscription {
   @Column({ nullable: true })
   providerSubscriptionId: string;
 
+  @Column({ default: false })
+  cancelAtPeriodEnd: boolean;
+
   @OneToMany(() => Invoice, (i) => i.subscription)
   invoices: Invoice[];
 }
