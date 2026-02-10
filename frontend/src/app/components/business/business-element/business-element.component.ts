@@ -28,6 +28,18 @@ export class BusinessElementComponent {
         return "info";
     }
   }
+  get statusText(){
+    if(!this.business) return "Inactivo";
+
+    switch (this.business.status) {
+      case BusinessStatus.ACTIVE:
+        return "Activo";
+      case BusinessStatus.PENDING_PAYMENT:
+        return "Pendiente de Pago";
+      default:
+        return "Inactivo";
+    }
+  }
 
   get statusLabel() {
     if(!this.business) return 'Inactivo';

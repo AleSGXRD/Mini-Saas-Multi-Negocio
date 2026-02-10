@@ -6,6 +6,7 @@ import { CreateBusinessDto } from './dto/create-business.dto';
 import { Membership } from './entities/membership.entity';
 import { Plan, PlanCode } from '../subscription/entities/plan.entity';
 import { SubscriptionService } from '../subscription/subscription.service';
+import { generateId } from 'src/utils/id-generator';
 
 @Injectable()
 export class BusinessService {
@@ -35,8 +36,22 @@ export class BusinessService {
     const plan = await this.planRepository.findOneBy({
       code: createBusinessDto.plan,
     });
+    let publicId = `${generateId('bs')}`;
+    let conflict = true;
+
+    do {
+      const existingBusiness = await this.businessRepository.findOneBy({
+        publicId: publicId,
+      });
+      if (!existingBusiness) {
+        conflict = false;
+      } else {
+        publicId = `${generateId('bs')}`;
+      }
+    } while (conflict);
 
     const business = this.businessRepository.create({
+      publicId: publicId,
       name: createBusinessDto.name,
       plan,
       status:

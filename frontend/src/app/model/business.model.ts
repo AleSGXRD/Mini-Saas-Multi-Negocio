@@ -3,6 +3,7 @@ import { Plan } from "./plan.model";
 
 export interface Business{
   id: string;
+  publicId: string;
   name: string;
   status: BusinessStatus;
   active: boolean;

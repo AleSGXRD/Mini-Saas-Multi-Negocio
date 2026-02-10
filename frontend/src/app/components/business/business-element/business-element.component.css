@@ -2,6 +2,7 @@
   border-radius: 16px;
   padding: 1.25rem;
   transition: all 0.2s ease;
+  cursor: pointer;
 }
 
 .business-card:hover {

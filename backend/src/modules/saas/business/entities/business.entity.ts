@@ -20,6 +20,9 @@ export class Business {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @Column({ unique: true })
+  publicId: string;
+
   @Column()
   name: string;
 
