@@ -23,9 +23,9 @@ export class BusinessController {
     return this.businessService.getBusinessesByUser(userId);
   }
 
-  @Get('get-current-business')
+  @Get('current')
   @UseGuards(BusinessActiveGuard)
-  verifyBusinessPayment(@Req() req) {
+  verifyBusinessPayment(@Req() req: any) {
     const business = req.business;
     return business;
   }

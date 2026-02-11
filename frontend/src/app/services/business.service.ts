@@ -16,7 +16,7 @@ export class BusinessService {
   }
 
   getCurrentBusiness(){
-    return this.http.get<Business>(`${environment.SERVER_URL}/get-current-business`);
+    return this.http.get<Business>(`${environment.SERVER_URL}/business/get-current-business`);
   }
 
   createBusiness(data: {

@@ -14,8 +14,6 @@ export class BusinessInterceptor implements HttpInterceptor {
   constructor(private router: Router) {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-
-    // obtener businessId desde la URL actual
     const urlSegments = this.router.url.split('/');
     const businessIndex = urlSegments.indexOf('business');
 
