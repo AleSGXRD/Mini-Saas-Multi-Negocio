@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Business, BusinessStatus } from './entities/business.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -7,6 +7,7 @@ import { Membership } from './entities/membership.entity';
 import { Plan, PlanCode } from '../subscription/entities/plan.entity';
 import { SubscriptionService } from '../subscription/subscription.service';
 import { generateId } from 'src/utils/id-generator';
+import { SubscriptionStatus } from '../subscription/entities/subscription.entity';
 
 @Injectable()
 export class BusinessService {
@@ -83,5 +84,31 @@ export class BusinessService {
       checkoutUrl,
       message: 'Business created successfully',
     };
+  }
+
+  async verifyBusinessPayment(businessId: string) {
+    const business = await this.businessRepository.findOne({
+      where: { id: businessId },
+      relations: ['plan'],
+    });
+    if (!business) {
+      throw new NotFoundException('Business not found');
+    }
+    if (business.plan.code === PlanCode.FREE) {
+      return true;
+    }
+
+    const subscription =
+      await this.subscriptionService.findBusinessSubscription(businessId);
+    if (subscription && subscription.status === SubscriptionStatus.ACTIVE) {
+      return {
+        sub: business.id,
+        plan: business.plan.code,
+      };
+    } else {
+      throw new NotFoundException(
+        'Active subscription not found for this business',
+      );
+    }
   }
 }

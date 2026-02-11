@@ -5,10 +5,11 @@ import { ChipModule } from 'primeng/chip';
 import { BusinessStatus } from '../../../model/enum/business-status.enum';
 import { TagModule } from 'primeng/tag';
 import { DatePipe } from '@angular/common';
+import { RouterLink } from "@angular/router";
 
 @Component({
   selector: 'app-business-element',
-  imports: [CardModule, ChipModule, TagModule, DatePipe],
+  imports: [CardModule, ChipModule, TagModule, DatePipe, RouterLink],
   templateUrl: './business-element.component.html',
   styleUrl: './business-element.component.css'
 })

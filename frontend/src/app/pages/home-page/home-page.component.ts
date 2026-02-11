@@ -6,17 +6,19 @@ import { BusinessService } from '../../services/business.service';
 import { Plan } from '../../model/enum/plan.enum';
 import { Business } from '../../model/business.model';
 import { BusinessElementComponent } from '../../components/business/business-element/business-element.component';
+import { BusinessCreateComponent } from '../../components/business/business-create/business-create.component';
 
 @Component({
   selector: 'app-home-page',
-  imports: [ClerkUserProfileComponent, ClerkUserButtonComponent, BusinessElementComponent],
+  imports: [ClerkUserProfileComponent, ClerkUserButtonComponent, BusinessElementComponent, BusinessCreateComponent],
   templateUrl: './home-page.component.html',
   styleUrl: './home-page.component.css'
 })
 export class HomePageComponent {
   info :any;
   businesses: Business[] = [];
-  constructor(private userService:UserService,
+  constructor(
+    private userService:UserService,
     private businessService:BusinessService
   ){}
 
@@ -25,13 +27,4 @@ export class HomePageComponent {
 
     this.businesses = await firstValueFrom(this.businessService.getBusinesses());
   }
-
-  createBusiness(){
-    return this.businessService.createBusiness({
-      name: 'New Business',
-      plan: Plan.PRO
-    })
-  }
-
-
 }

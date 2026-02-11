@@ -21,6 +21,13 @@ export class SubscriptionService {
     private billingService: BillingService,
   ) {}
 
+  findBusinessSubscription(businessId: string) {
+    return this.subscriptionRepository.findOne({
+      where: { business: { id: businessId } },
+      relations: ['plan'],
+    });
+  }
+
   async createSubscription(business: Business, plan: Plan) {
     const subscription = await this.subscriptionRepository.save({
       business,
@@ -33,6 +40,10 @@ export class SubscriptionService {
       subscription.id,
       plan.stripePriceId,
     );
+
+    subscription.checkoutUrl = checkoutUrl;
+
+    await this.subscriptionRepository.save(subscription);
 
     return checkoutUrl;
   }

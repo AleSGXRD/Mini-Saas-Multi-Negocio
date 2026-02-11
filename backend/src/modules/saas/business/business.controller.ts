@@ -1,8 +1,9 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { BusinessService } from './business.service';
 import { ClerkAuthGuard } from '@modules/auth-clerk/guard/clerk-auth.guard';
 import { CreateBusinessDto } from './dto/create-business.dto';
 import { UserId } from '@modules/auth-clerk/decorators/user.decorator';
+import { BusinessActiveGuard } from '@modules/auth-clerk/guard/business-active.guard';
 
 @Controller('business')
 @UseGuards(ClerkAuthGuard)
@@ -20,5 +21,12 @@ export class BusinessController {
   @Get()
   getBusinesses(@UserId() userId: string) {
     return this.businessService.getBusinessesByUser(userId);
+  }
+
+  @Get('get-current-business')
+  @UseGuards(BusinessActiveGuard)
+  verifyBusinessPayment(@Req() req) {
+    const business = req.business;
+    return business;
   }
 }

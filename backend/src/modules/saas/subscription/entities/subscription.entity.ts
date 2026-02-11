@@ -38,6 +38,9 @@ export class Subscription {
   @Column({ nullable: true })
   providerSubscriptionId: string;
 
+  @Column({ nullable: true })
+  checkoutUrl?: string;
+
   @Column({ default: false })
   cancelAtPeriodEnd: boolean;
 
