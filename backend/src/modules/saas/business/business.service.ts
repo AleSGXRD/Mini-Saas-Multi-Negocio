@@ -86,9 +86,9 @@ export class BusinessService {
     };
   }
 
-  async verifyBusinessPayment(businessId: string) {
+  async verifyBusinessPayment(publicId: string) {
     const business = await this.businessRepository.findOne({
-      where: { id: businessId },
+      where: { publicId },
       relations: ['plan'],
     });
     if (!business) {
@@ -97,6 +97,7 @@ export class BusinessService {
     if (business.plan.code === PlanCode.FREE) {
       return true;
     }
+    const { id: businessId } = business;
 
     const subscription =
       await this.subscriptionService.findBusinessSubscription(businessId);
