@@ -91,6 +91,7 @@ export class BusinessService {
       where: { publicId },
       relations: ['plan'],
     });
+    console.log('Verifying payment for business:', business);
     if (!business) {
       throw new NotFoundException('Business not found');
     }
@@ -101,6 +102,12 @@ export class BusinessService {
 
     const subscription =
       await this.subscriptionService.findBusinessSubscription(businessId);
+    console.log(
+      'Found subscription for business:',
+      subscription,
+      'with status:',
+      subscription?.status,
+    );
     if (subscription && subscription.status === SubscriptionStatus.ACTIVE) {
       return {
         sub: business.id,

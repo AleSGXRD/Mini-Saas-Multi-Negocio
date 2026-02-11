@@ -72,18 +72,16 @@ export class BillingService {
     let invoice = await this.invoiceRepository.findOne({
       where: { providerInvoiceId: invoiceStripe.id },
     });
-    if (!invoice) {
-      invoice = await this.invoiceRepository.save({
-        subscription,
-        providerInvoiceId: invoiceStripe.id,
-        amountDue: invoiceStripe.amount_due,
-        amountPaid: invoiceStripe.amount_paid,
-        currency: invoiceStripe.currency,
-        status: 'paid',
-        hostedInvoiceUrl: invoiceStripe.hosted_invoice_url,
-        pdfUrl: invoiceStripe.invoice_pdf,
-      });
-    }
+    invoice = await this.invoiceRepository.save({
+      subscription,
+      providerInvoiceId: invoiceStripe.id,
+      amountDue: invoiceStripe.amount_due,
+      amountPaid: invoiceStripe.amount_paid,
+      currency: invoiceStripe.currency,
+      status: 'paid',
+      hostedInvoiceUrl: invoiceStripe.hosted_invoice_url,
+      pdfUrl: invoiceStripe.invoice_pdf,
+    });
 
     let payment = await this.paymentRepository.findOne({
       where: {
