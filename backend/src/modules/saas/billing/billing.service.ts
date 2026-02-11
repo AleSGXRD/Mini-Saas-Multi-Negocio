@@ -8,6 +8,7 @@ import { Repository } from 'typeorm';
 import { Payment } from './entities/payment.entity';
 import { Invoice } from './entities/invoice.entity';
 import { StripeService } from '../stripe/stripe.service';
+import { Business, BusinessStatus } from '../business/entities/business.entity';
 
 @Injectable()
 export class BillingService {
@@ -19,6 +20,8 @@ export class BillingService {
     private invoiceRepository: Repository<Invoice>,
     @InjectRepository(Payment)
     private paymentRepository: Repository<Payment>,
+    @InjectRepository(Business)
+    private businessRepository: Repository<Business>,
   ) {}
 
   async findSubscriptionById(subscriptionId: string) {
@@ -67,6 +70,7 @@ export class BillingService {
   ) {
     const subscription = await this.subscriptionRepository.findOne({
       where: { id: subscriptionId },
+      relations: ['business'],
     });
 
     let invoice = await this.invoiceRepository.findOne({
@@ -99,9 +103,12 @@ export class BillingService {
         status: 'paid',
       });
     }
-
     subscription.status = SubscriptionStatus.ACTIVE;
     subscription.providerSubscriptionId = providerSubscriptionId;
+
+    const business = subscription.business;
+    business.status = BusinessStatus.ACTIVE;
+    await this.businessRepository.save(business);
     await this.subscriptionRepository.save(subscription);
   }
 
