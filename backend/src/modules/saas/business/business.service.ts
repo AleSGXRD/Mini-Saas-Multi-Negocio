@@ -33,6 +33,14 @@ export class BusinessService {
     });
   }
 
+  getBusiness(businessId: string) {
+    return this.businessRepository.findOne({
+      where: {
+        id: businessId,
+      },
+    });
+  }
+
   async create(userId: string, createBusinessDto: CreateBusinessDto) {
     const plan = await this.planRepository.findOneBy({
       code: createBusinessDto.plan,

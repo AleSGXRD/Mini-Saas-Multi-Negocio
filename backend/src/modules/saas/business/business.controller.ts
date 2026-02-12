@@ -27,6 +27,6 @@ export class BusinessController {
   @UseGuards(BusinessActiveGuard)
   verifyBusinessPayment(@Req() req: any) {
     const business = req.business;
-    return business;
+    return this.businessService.getBusiness(business.sub);
   }
 }
