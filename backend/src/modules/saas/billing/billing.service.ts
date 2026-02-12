@@ -60,7 +60,7 @@ export class BillingService {
       },
     });
 
-    return session.url;
+    return session;
   }
 
   async paymentSuccess(

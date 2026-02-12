@@ -35,17 +35,30 @@ export class SubscriptionService {
       status: SubscriptionStatus.INCOMPLETE,
     });
 
-    const checkoutUrl = await this.billingService.createCheckout(
-      business.id,
+    return this.createCheckoutUrl(business.id, subscription.id);
+  }
+
+  async createCheckoutUrl(businessid: string, subscriptionId: string) {
+    const subscription = await this.subscriptionRepository.findOne({
+      where: {
+        id: subscriptionId,
+      },
+      relations: ['plan'],
+    });
+
+    const session = await this.billingService.createCheckout(
+      businessid,
       subscription.id,
-      plan.stripePriceId,
+      subscription.plan.stripePriceId,
     );
 
-    subscription.checkoutUrl = checkoutUrl;
+    subscription.checkoutSessionId = session.id;
+    subscription.checkoutUrl = session.url;
+    subscription.checkoutExpiresAt = new Date(session.expires_at * 1000);
 
     await this.subscriptionRepository.save(subscription);
 
-    return checkoutUrl;
+    return session.url;
   }
 
   async updateSubscription(

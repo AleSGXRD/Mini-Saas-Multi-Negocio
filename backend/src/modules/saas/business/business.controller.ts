@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { BusinessService } from './business.service';
 import { ClerkAuthGuard } from '@modules/auth-clerk/guard/clerk-auth.guard';
 import { CreateBusinessDto } from './dto/create-business.dto';
@@ -21,6 +29,11 @@ export class BusinessController {
   @Get()
   getBusinesses(@UserId() userId: string) {
     return this.businessService.getBusinessesByUser(userId);
+  }
+
+  @Get(':publicId')
+  getBusinessCheckOutUrl(@Param('publicId') publicId: string) {
+    return this.businessService.getCheckoutUrl(publicId);
   }
 
   @Get('current')

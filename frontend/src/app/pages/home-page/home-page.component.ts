@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ClerkUserButtonComponent, ClerkUserProfileComponent, ClerkCreateOrganizationComponent } from "ngx-clerk";
+import { ClerkUserButtonComponent, ClerkUserProfileComponent } from "ngx-clerk";
 import { UserService } from '../../services/user.service';
 import { firstValueFrom } from 'rxjs';
 import { BusinessService } from '../../services/business.service';

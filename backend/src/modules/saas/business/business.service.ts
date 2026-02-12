@@ -41,6 +41,28 @@ export class BusinessService {
     });
   }
 
+  async getCheckoutUrl(publicId: string) {
+    const business = await this.businessRepository.findOne({
+      where: {
+        publicId: publicId,
+      },
+    });
+    const subscription =
+      await this.subscriptionService.findBusinessSubscription(business.id);
+
+    if (
+      subscription.checkoutExpiresAt &&
+      subscription.checkoutExpiresAt.getTime() < Date.now()
+    ) {
+      return this.subscriptionService.createCheckoutUrl(
+        business.id,
+        subscription.id,
+      );
+    }
+
+    return subscription.checkoutUrl;
+  }
+
   async create(userId: string, createBusinessDto: CreateBusinessDto) {
     const plan = await this.planRepository.findOneBy({
       code: createBusinessDto.plan,
