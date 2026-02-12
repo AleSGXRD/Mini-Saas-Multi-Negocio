@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, SimpleChanges } from '@angular/core';
 import { Business } from '../../../model/business.model';
 import { CardModule } from 'primeng/card';
 import { ChipModule } from 'primeng/chip';
@@ -6,6 +6,8 @@ import { BusinessStatus } from '../../../model/enum/business-status.enum';
 import { TagModule } from 'primeng/tag';
 import { DatePipe } from '@angular/common';
 import { RouterLink } from "@angular/router";
+import { BusinessService } from '../../../services/business.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-business-element',
@@ -15,6 +17,26 @@ import { RouterLink } from "@angular/router";
 })
 export class BusinessElementComponent {
   @Input() business: Business | null = null;
+  url: string ='';
+  /**
+   *
+   */
+  constructor(private businessService: BusinessService) {
+  }
+  async ngOnChanges(changes: SimpleChanges) {
+    //Called before any other lifecycle hook. Use it to inject dependencies, but avoid any serious work here.
+    //Add '${implements OnChanges}' to the class.
+    if(!this.business) return;
+
+    if(this.business.status == BusinessStatus.PENDING_PAYMENT){
+      const checkoutUrl = await firstValueFrom(this.businessService.getCheckoutUrl(this.business.publicId));
+      console.log(checkoutUrl);
+      this.url = checkoutUrl.url;
+    }
+    else{
+      this.url = `business/${this.business.publicId}`;
+    }
+  }
   get statusSeverity() {
     if(!this.business) return "info";
 

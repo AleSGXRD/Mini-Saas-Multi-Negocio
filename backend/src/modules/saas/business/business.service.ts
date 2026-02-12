@@ -60,7 +60,7 @@ export class BusinessService {
       );
     }
 
-    return subscription.checkoutUrl;
+    return { url: subscription.checkoutUrl };
   }
 
   async create(userId: string, createBusinessDto: CreateBusinessDto) {

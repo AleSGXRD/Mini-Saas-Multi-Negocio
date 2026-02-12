@@ -25,4 +25,8 @@ export class BusinessService {
   }){
     return this.http.post<any>(`${environment.SERVER_URL}/business`, data);
   }
+
+  getCheckoutUrl(publicId:string){
+    return this.http.get<any>(`${environment.SERVER_URL}/business/${publicId}`)
+  }
 }
