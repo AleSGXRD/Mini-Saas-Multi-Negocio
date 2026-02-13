@@ -29,7 +29,7 @@ export class BusinessService {
           user: { id: userId },
         },
       },
-      relations: ['memberships'],
+      relations: ['memberships', 'plan'],
     });
   }
 

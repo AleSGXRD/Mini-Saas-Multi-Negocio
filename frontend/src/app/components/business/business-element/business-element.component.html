@@ -1,31 +1,29 @@
 @if (business) {
-  <a [href]="url">
-    <p-card class="business-card">
+  <p-card class="business-card" [routerLink]="active == true ? url : undefined" (click)="active == true? undefined: handleClick()">
 
-      <!-- Header -->
-      <div class="header">
-        <div class="title">
-          {{ business.name }}
-        </div>
-
-        <p-tag
-          [value]="statusLabel"
-          [severity]="statusSeverity"
-          rounded>
-        </p-tag>
+    <!-- Header -->
+    <div class="header">
+      <div class="title">
+        {{ business.name }}
       </div>
 
-      <!-- Plan -->
-      <div class="plan">
-        {{ getPlanLabel(business.plan?.code ?? 'free') }}
-      </div>
+      <p-tag
+        [value]="statusLabel"
+        [severity]="statusSeverity"
+        rounded>
+      </p-tag>
+    </div>
 
-      <!-- Info -->
-      <div class="meta">
-        <span>Estado: {{ statusText }}</span>
-        <span>Creado: {{ business.createdAt | date:'mediumDate' }}</span>
-      </div>
+    <!-- Plan -->
+    <div class="plan">
+      {{ getPlanLabel(business.plan?.code ?? 'free') }}
+    </div>
 
-    </p-card>
-  </a>
+    <!-- Info -->
+    <div class="meta">
+      <span>Estado: {{ statusText }}</span>
+      <span>Creado: {{ business.createdAt | date:'mediumDate' }}</span>
+    </div>
+
+  </p-card>
 }

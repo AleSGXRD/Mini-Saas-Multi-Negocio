@@ -17,26 +17,30 @@ import { firstValueFrom } from 'rxjs';
 })
 export class BusinessElementComponent {
   @Input() business: Business | null = null;
+  active: boolean = false;
   url: string ='';
-  /**
-   *
-   */
   constructor(private businessService: BusinessService) {
   }
   async ngOnChanges(changes: SimpleChanges) {
-    //Called before any other lifecycle hook. Use it to inject dependencies, but avoid any serious work here.
-    //Add '${implements OnChanges}' to the class.
     if(!this.business) return;
 
     if(this.business.status == BusinessStatus.PENDING_PAYMENT){
-      const checkoutUrl = await firstValueFrom(this.businessService.getCheckoutUrl(this.business.publicId));
-      console.log(checkoutUrl);
-      this.url = checkoutUrl.url;
+      this.active = false;
     }
     else{
+      this.active = true;
       this.url = `business/${this.business.publicId}`;
     }
   }
+
+  async handleClick(){
+    if(!this.business) return;
+
+    const checkoutUrl = await firstValueFrom(this.businessService.getCheckoutUrl(this.business.publicId));
+    this.url = checkoutUrl.url;
+    window.location.href = this.url;
+  }
+
   get statusSeverity() {
     if(!this.business) return "info";
 
