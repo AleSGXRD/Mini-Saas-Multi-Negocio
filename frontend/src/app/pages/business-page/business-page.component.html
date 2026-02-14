@@ -1,2 +1,11 @@
 <p>business-page works!</p>
+
+<app-create-order></app-create-order>
+
+<h1>Orders:</h1>
+<ul>
+  @for (item of orders; track $index) {
+    <li>{{item.name}}</li>
+  }
+</ul>
 {{business | json}}

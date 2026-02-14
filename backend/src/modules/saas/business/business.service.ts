@@ -47,6 +47,9 @@ export class BusinessService {
         publicId: publicId,
       },
     });
+    if (!business) {
+      throw new NotFoundException('Business not Found');
+    }
     const subscription =
       await this.subscriptionService.findBusinessSubscription(business.id);
 

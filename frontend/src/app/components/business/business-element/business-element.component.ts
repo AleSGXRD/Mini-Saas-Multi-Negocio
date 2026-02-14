@@ -19,8 +19,8 @@ export class BusinessElementComponent {
   @Input() business: Business | null = null;
   active: boolean = false;
   url: string ='';
-  constructor(private businessService: BusinessService) {
-  }
+  constructor(private businessService: BusinessService) {}
+
   async ngOnChanges(changes: SimpleChanges) {
     if(!this.business) return;
 

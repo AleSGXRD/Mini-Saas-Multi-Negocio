@@ -2,10 +2,13 @@ import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BusinessService } from '../../services/business.service';
 import { JsonPipe } from '@angular/common';
+import { OrderService } from '../../services/order/order.service';
+import { firstValueFrom } from 'rxjs';
+import { CreateOrderComponent } from "../../components/orders/create-order/create-order.component";
 
 @Component({
   selector: 'app-business-page',
-  imports: [JsonPipe],
+  imports: [JsonPipe, CreateOrderComponent],
   templateUrl: './business-page.component.html',
   styleUrl: './business-page.component.css'
 })
@@ -14,9 +17,12 @@ export class BusinessPageComponent {
 
   business: any;
 
+  orders: any[] = [];
+
   constructor(
     private activatedRoute: ActivatedRoute,
     private businessService: BusinessService,
+    private orderService: OrderService,
   ) {}
 
   async ngOnInit() {
@@ -29,6 +35,7 @@ export class BusinessPageComponent {
         console.log(res);
       }
     })
+    this.orders = await firstValueFrom(this.orderService.findMany());
   }
 
 }

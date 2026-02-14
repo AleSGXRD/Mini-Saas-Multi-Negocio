@@ -15,6 +15,7 @@ import { DatabaseModule } from '@database/database.module';
 import { Invoice } from '@modules/saas/billing/entities/invoice.entity';
 import { SaasModule } from '@modules/saas/saas.module';
 import { OrderModule } from './modules/business/order/order.module';
+import { Order } from '@modules/business/order/entities/order.entity';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { OrderModule } from './modules/business/order/order.module';
         Invoice,
         Payment,
         Plan,
+        Order,
       ],
       synchronize: true,
     }),
