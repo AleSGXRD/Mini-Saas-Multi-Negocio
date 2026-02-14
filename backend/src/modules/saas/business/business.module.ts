@@ -16,5 +16,6 @@ import { SubscriptionModule } from '../subscription/subscription.module';
   ],
   controllers: [BusinessController],
   providers: [BusinessService],
+  exports: [BusinessService],
 })
 export class BusinessModule {}

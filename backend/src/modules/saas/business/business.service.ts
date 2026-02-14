@@ -140,7 +140,7 @@ export class BusinessService {
     );
     if (subscription && subscription.status === SubscriptionStatus.ACTIVE) {
       return {
-        sub: business.id,
+        id: business.id,
         plan: business.plan.code,
       };
     } else {

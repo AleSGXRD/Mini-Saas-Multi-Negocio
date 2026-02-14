@@ -11,7 +11,7 @@ import { BusinessService } from './business.service';
 import { ClerkAuthGuard } from '@modules/auth-clerk/guard/clerk-auth.guard';
 import { CreateBusinessDto } from './dto/create-business.dto';
 import { UserId } from '@modules/auth-clerk/decorators/user.decorator';
-import { BusinessActiveGuard } from '@modules/auth-clerk/guard/business-active.guard';
+import { BusinessActiveGuard } from './guard/business-active.guard';
 
 @Controller('business')
 @UseGuards(ClerkAuthGuard)
@@ -40,6 +40,6 @@ export class BusinessController {
   @UseGuards(BusinessActiveGuard)
   verifyBusinessPayment(@Req() req: any) {
     const business = req.business;
-    return this.businessService.getBusiness(business.sub);
+    return this.businessService.getBusiness(business.id);
   }
 }
